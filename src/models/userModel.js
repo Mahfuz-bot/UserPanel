@@ -74,6 +74,7 @@ userSchema.methods.generateRefreshToken = async function () {
   return jwt.sign(
     {
       _id: this._id,
+      role: this.role,
     },
     REFRESH_TOKEN_SECRET,
     {
@@ -87,6 +88,7 @@ userSchema.methods.generateAccessToken = async function () {
     {
       _id: this._id,
       email: this.email,
+      role: this.role,
     },
     ACCESS_TOKEN_SECRET,
     {
