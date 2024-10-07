@@ -1,4 +1,4 @@
-import { NODE_ENV, REFRESH_TOKEN_SECRET } from "../config.js";
+import { NODE_ENV, REFRESH_TOKEN_SECRET, ADMIN_SECRET } from "../config.js";
 import User from "../models/userModel.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
@@ -7,7 +7,7 @@ import bcrypt from "bcrypt";
 
 export const signup = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, adminSecret } = req.body;
     if (!firstName || !lastName || !email || !password) {
       return res.status(400).json(new ApiError(400, "All fields are required"));
     }
@@ -19,7 +19,15 @@ export const signup = async (req, res, next) => {
         .json(new ApiError(400, "Email already in use", {}));
     }
 
-    const user = await User.create({ firstName, lastName, email, password });
+    const role = adminSecret === ADMIN_SECRET ? "admin" : "user";
+
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      password,
+      role,
+    });
 
     return res
       .status(201)
